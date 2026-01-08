@@ -13,11 +13,15 @@ import { Media } from './collections/Media'
 // Globals
 import { HomeSettings } from './globals/HomeSettings'
 
+const payloadSecret =
+  process.env.PAYLOAD_SECRET ?? (process.env.NODE_ENV === 'production' ? undefined : 'dev-secret')
+
+if (!payloadSecret) {
+  throw new Error('PAYLOAD_SECRET is required in production environments.')
+}
+
 export default buildConfig({
   sharp,
-  admin: {
-    user: 'users',
-  },
   collections: [
     Projects,
     OpenCalls,
@@ -58,7 +62,7 @@ export default buildConfig({
   ],
   globals: [HomeSettings],
   editor: lexicalEditor({}),
-  secret: process.env.PAYLOAD_SECRET || 'your-secret-key-change-in-production',
+  secret: payloadSecret,
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || 'postgresql://postgres:password@localhost:5432/livx',

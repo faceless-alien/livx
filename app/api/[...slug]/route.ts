@@ -9,6 +9,9 @@ import {
 
 import config from '@/payload/payload.config'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export const OPTIONS = REST_OPTIONS(config)
 export const GET = REST_GET(config)
 export const POST = REST_POST(config)
