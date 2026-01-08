@@ -22,9 +22,6 @@ if (!payloadSecret) {
 
 export default buildConfig({
   sharp,
-  admin: {
-    user: 'users',
-  },
   collections: [
     Projects,
     OpenCalls,
