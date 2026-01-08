@@ -10,7 +10,7 @@ export async function generateMetadata({
   params,
   searchParams,
 }: {
-  params: Promise<{ segments: string[] }>
+  params: Promise<{ segments?: string[] }>
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const resolvedParams = await params
@@ -31,7 +31,7 @@ export default async function Page({
   params,
   searchParams,
 }: {
-  params: Promise<{ segments: string[] }>
+  params: Promise<{ segments?: string[] }>
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const resolvedParams = await params
