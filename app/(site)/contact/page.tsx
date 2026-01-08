@@ -8,6 +8,7 @@ export default function Contact() {
     email: '',
     type: 'general',
     message: '',
+    website: '',
   })
   const [submitted, setSubmitted] = useState(false)
 
@@ -28,7 +29,7 @@ export default function Contact() {
 
       if (response.ok) {
         setSubmitted(true)
-        setFormData({ name: '', email: '', type: 'general', message: '' })
+        setFormData({ name: '', email: '', type: 'general', message: '', website: '' })
         setTimeout(() => setSubmitted(false), 3000)
       }
     } catch (error) {
@@ -53,6 +54,20 @@ export default function Contact() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6 rounded-[10px] border border-muted/30 bg-paper p-8">
+              <div className="hidden" aria-hidden="true">
+                <label className="block text-xs font-semibold text-ink mb-2 uppercase tracking-[0.16em]">
+                  Leave this field empty
+                </label>
+                <input
+                  type="text"
+                  name="website"
+                  value={formData.website}
+                  onChange={handleChange}
+                  autoComplete="off"
+                  tabIndex={-1}
+                  className="w-full rounded-[10px] border border-muted/30 bg-paper px-4 py-3 text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-blush"
+                />
+              </div>
               <div>
                 <label className="block text-xs font-semibold text-ink mb-2 uppercase tracking-[0.16em]">Name</label>
                 <input
