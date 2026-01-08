@@ -1,8 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LIVX - Erasmus+ Youth Organization Website
 
-## Getting Started
+A production-ready website for LIVX, an Erasmus+ youth organization. Built with Next.js, Tailwind CSS, Payload CMS, and PostgreSQL.
 
-First, run the development server:
+## Quick Start
+
+```bash
+npm install
+npm run db:up
+npm run dev
+```
+
+Visit http://localhost:3000 for the frontend and http://localhost:3000/admin for the Payload CMS admin panel.
+
+## Key Features
+
+- ✅ Minimal editorial design with LIVX brand colors
+- ✅ Responsive homepage with hero, mission, projects, impact stats
+- ✅ Pages: Home, About, Projects, Open Calls, For Partners, Contact
+- ✅ Payload CMS admin panel with collections for Projects, Open Calls, Team Members, Contact Submissions
+- ✅ Contact form with database persistence
+- ✅ Image optimization and media management
+- ✅ SEO-optimized with metadata and Open Graph tags
+- ✅ TypeScript for type safety
+- ✅ ESLint + Prettier for code quality
+
+## Tech Stack
+
+- Next.js 15 (TypeScript, App Router)
+- Tailwind CSS 4
+- Payload CMS 3
+- PostgreSQL
+- ESLint + Prettier
+
+## Environment Setup
+
+1. Start PostgreSQL (Docker)
+	- `docker compose up -d`
+2. Update `.env.local` if you changed DB credentials
+3. Run `npm run dev`
+
+## Documentation
+
+See [README.md](./README.md) in the root for full documentation on:
+- Project structure
+- CMS collections and fields
+- Available pages and routes
+- Deployment instructions
+- API integration
+- Troubleshooting
+
+## Support
+
+**Email**: hello@livx.org | **Safeguarding**: safeguarding@livx.org
+
 
 ```bash
 npm run dev

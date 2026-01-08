@@ -1,0 +1,162 @@
+import { CollectionConfig } from 'payload'
+
+import { slugify } from '@/lib/slugify'
+
+export const Projects: CollectionConfig = {
+  slug: 'projects',
+  admin: {
+    useAsTitle: 'title',
+    group: 'Content',
+    defaultColumns: ['title', 'status', 'slug', 'updatedAt'],
+  },
+  access: {
+    read: () => true,
+    create: ({ req }) => Boolean(req.user),
+    update: ({ req }) => Boolean(req.user),
+    delete: ({ req }) => Boolean(req.user),
+  },
+  hooks: {
+    beforeValidate: [
+      ({ data }) => {
+        if (!data) return data
+        const title = data.title
+
+        if (!data.slug && typeof title === 'string') {
+          data.slug = slugify(title)
+        }
+
+        if (!data.slug && title && typeof title === 'object') {
+          const first = Object.values(title as Record<string, unknown>)[0]
+          if (typeof first === 'string') data.slug = slugify(first)
+        }
+
+        return data
+      },
+    ],
+  },
+  fields: [
+    {
+      name: 'title',
+      type: 'text',
+      required: true,
+      localized: true,
+    },
+    {
+      name: 'slug',
+      type: 'text',
+      required: true,
+      unique: true,
+      admin: {
+        position: 'sidebar',
+        description: 'Used in the public URL, e.g. /projects/my-project',
+      },
+    },
+    {
+      name: 'status',
+      type: 'select',
+      options: [
+        { label: 'Upcoming', value: 'upcoming' },
+        { label: 'Ongoing', value: 'ongoing' },
+        { label: 'Completed', value: 'completed' },
+      ],
+      defaultValue: 'upcoming',
+      required: true,
+    },
+    {
+      name: 'type',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'location',
+      type: 'group',
+      fields: [
+        {
+          name: 'city',
+          type: 'text',
+        },
+        {
+          name: 'country',
+          type: 'text',
+        },
+      ],
+    },
+    {
+      name: 'startDate',
+      type: 'date',
+    },
+    {
+      name: 'endDate',
+      type: 'date',
+    },
+    {
+      name: 'themes',
+      type: 'array',
+      fields: [
+        {
+          name: 'theme',
+          type: 'text',
+        },
+      ],
+    },
+    {
+      name: 'summary',
+      type: 'textarea',
+      localized: true,
+    },
+    {
+      name: 'content',
+      type: 'richText',
+      localized: true,
+    },
+    {
+      name: 'gallery',
+      type: 'array',
+      fields: [
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+        },
+        {
+          name: 'caption',
+          type: 'text',
+        },
+      ],
+    },
+    {
+      name: 'partners',
+      type: 'array',
+      fields: [
+        {
+          name: 'name',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'url',
+          type: 'text',
+        },
+      ],
+    },
+    {
+      name: 'outcomes',
+      type: 'array',
+      fields: [
+        {
+          name: 'outcome',
+          type: 'text',
+        },
+      ],
+    },
+    {
+      name: 'featured',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+      },
+    },
+  ],
+}

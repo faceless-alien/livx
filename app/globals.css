@@ -1,26 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* LIVX Design Tokens */
+  --ink: #030303;
+  --paper: #FFFFFF;
+  --mist: #F5F1F4;
+  --blush: #E9CCDF;
+  --muted: #A599A1;
+  --deep: #342F33;
+
+  /* Energy accents (use very sparingly) */
+  --coral: #FE8E9D;
+  --orange: #FC5202;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-mist: var(--mist);
+  --color-blush: var(--blush);
+  --color-muted: var(--muted);
+  --color-deep: var(--deep);
+  --color-coral: var(--coral);
+  --color-orange: var(--orange);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+}
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--mist);
+  color: var(--ink);
+  font-family: "Inter", sans-serif;
+  line-height: 1.7;
 }
+
+
