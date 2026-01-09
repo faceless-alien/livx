@@ -40,4 +40,93 @@ body {
   line-height: 1.7;
 }
 
+/* Rich Text Content Styles */
+.rich-text-content {
+  line-height: 1.8;
+}
+
+.rich-text-content h1 {
+  font-family: "Playfair Display", serif;
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.rich-text-content h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.rich-text-content h3 {
+  font-family: "Playfair Display", serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.rich-text-content p {
+  margin-bottom: 1rem;
+  color: var(--deep);
+}
+
+.rich-text-content ul,
+.rich-text-content ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.rich-text-content li {
+  margin-bottom: 0.5rem;
+  color: var(--deep);
+}
+
+.rich-text-content ul li {
+  list-style-type: disc;
+}
+
+.rich-text-content ol li {
+  list-style-type: decimal;
+}
+
+.rich-text-content a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: color 0.2s;
+}
+
+.rich-text-content a:hover {
+  color: var(--coral);
+}
+
+.rich-text-content blockquote {
+  border-left: 4px solid var(--blush);
+  padding-left: 1.5rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: var(--deep);
+}
+
+.rich-text-content hr {
+  border: none;
+  border-top: 1px solid var(--muted);
+  margin: 2rem 0;
+}
+
+.rich-text-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin: 1.5rem 0;
+}
+
 

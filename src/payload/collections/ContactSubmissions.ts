@@ -2,11 +2,6 @@ import { CollectionConfig } from 'payload'
 
 export const ContactSubmissions: CollectionConfig = {
   slug: 'contact-submissions',
-  admin: {
-    useAsTitle: 'email',
-    group: 'Inbox',
-    defaultColumns: ['email', 'type', 'createdAt'],
-  },
   access: {
     read: ({ req }) => Boolean(req.user),
     create: () => true,

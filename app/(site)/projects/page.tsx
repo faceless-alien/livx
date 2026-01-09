@@ -1,65 +1,51 @@
-import { asText, getPayloadClient } from '@/lib/payload'
-import ProjectsClient from './ProjectsClient'
+import { getPayloadClient, asText } from '@/lib/payload'
+import Link from 'next/link'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
-function formatProjectLocation(location: unknown) {
-  if (!location || typeof location !== 'object') return ''
-  const record = location as Record<string, unknown>
-  const city = typeof record.city === 'string' ? record.city : ''
-  const country = typeof record.country === 'string' ? record.country : ''
-  return [city, country].filter(Boolean).join(', ')
-}
-
-function formatProjectStatus(status: unknown) {
-  if (status === 'upcoming') return 'Upcoming'
-  if (status === 'ongoing') return 'Ongoing'
-  if (status === 'completed') return 'Completed'
-  return 'Project'
+interface Project {
+  id: string
+  title: string | Record<string, string>
+  slug: string
+  status: 'upcoming' | 'ongoing' | 'completed'
+  type: string
+  location?: {
+    city?: string
+    country?: string
+  }
+  startDate?: string
+  endDate?: string
+  themes?: { theme: string }[]
+  summary?: string | Record<string, string>
+  featured?: boolean
 }
 
 export default async function Projects() {
   const payload = await getPayloadClient()
+  
   const result = await payload.find({
     collection: 'projects',
-    limit: 50,
+    limit: 100,
     sort: '-createdAt',
   })
+  const projects = result.docs as unknown as Project[]
 
-  const projects = result.docs.map((doc: unknown) => {
-    const record = doc as Record<string, unknown>
-    const idValue = record.id
-    const id = String(idValue)
-
-    const rawSlug = record.slug
-    const slug =
-      typeof rawSlug === 'string' && rawSlug.trim().length > 0 ? rawSlug.trim() : id
-
-    const rawStartDate = record.startDate
-    const year = rawStartDate ? new Date(String(rawStartDate)).getFullYear() : undefined
-
-    const rawThemes = record.themes
-    const tags = Array.isArray(rawThemes)
-      ? rawThemes
-          .map((item) => {
-            if (!item || typeof item !== 'object') return ''
-            const theme = (item as Record<string, unknown>).theme
-            return asText(theme)
-          })
-          .filter(Boolean)
-      : []
-
-    return {
-      id,
-      slug,
-      title: asText(record.title) || 'Untitled project',
-      status: formatProjectStatus(record.status),
-      location: formatProjectLocation(record.location),
-      year,
-      summary: asText(record.summary),
-      tags,
+  const getYear = (project: Project) => {
+    if (project.startDate) {
+      return new Date(project.startDate).getFullYear()
     }
-  })
+    return null
+  }
+
+  const getLocation = (project: Project) => {
+    if (!project.location) return ''
+    const parts = [project.location.city, project.location.country].filter(Boolean)
+    return parts.join(', ')
+  }
+
+  const getThemes = (project: Project) => {
+    return project.themes?.map(t => t.theme).filter(Boolean) || []
+  }
 
   return (
     <div className="bg-mist">
@@ -79,12 +65,6 @@ export default async function Projects() {
               <div className="mt-3 space-y-3">
                 <a
                   className="block border-0 text-sm text-ink/80 hover:text-deep hover:underline hover:underline-offset-4"
-                  href="#filters"
-                >
-                  Filters
-                </a>
-                <a
-                  className="block border-0 text-sm text-ink/80 hover:text-deep hover:underline hover:underline-offset-4"
                   href="#list"
                 >
                   Project list
@@ -94,7 +74,61 @@ export default async function Projects() {
           </div>
         </div>
 
-        <ProjectsClient projects={projects} />
+        {projects.length === 0 ? (
+          <div className="mt-12 text-center py-16">
+            <p className="text-lg text-muted">No projects found. Check back soon!</p>
+          </div>
+        ) : (
+          <div className="mt-10 space-y-6" id="list">
+            {projects.map((project) => (
+              <Link key={project.id} href={`/projects/${project.slug}`} className="group border-0 block">
+                <div className="bg-paper p-8 rounded-[10px] border border-muted/30 hover:border-blush transition-colors hover:-translate-y-[1px] hover:shadow-sm">
+                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">{project.status}</span>
+                        {getLocation(project) && (
+                          <>
+                            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">•</span>
+                            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">{getLocation(project)}</span>
+                          </>
+                        )}
+                      </div>
+
+                      <h2 className="mt-3 text-2xl font-serif font-bold text-ink group-hover:underline group-hover:decoration-muted/50 group-hover:underline-offset-4">
+                        {asText(project.title)}
+                      </h2>
+
+                      {project.summary && (
+                        <p className="mt-3 text-deep/80 leading-relaxed">{asText(project.summary)}</p>
+                      )}
+
+                      {getThemes(project).length > 0 && (
+                        <div className="mt-5 flex flex-wrap gap-2">
+                          {getThemes(project).map((theme) => (
+                            <span
+                              key={theme}
+                              className="inline-flex rounded-full border border-muted/30 bg-mist px-4 py-2 text-[13px] uppercase tracking-[0.12em] text-deep"
+                            >
+                              {theme}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {getYear(project) && (
+                      <div className="min-w-[140px] text-right">
+                        <div className="text-xs uppercase tracking-[0.16em] text-muted">Year</div>
+                        <div className="mt-2 text-lg font-semibold text-ink">{getYear(project)}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

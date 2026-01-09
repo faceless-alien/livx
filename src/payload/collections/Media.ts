@@ -2,10 +2,6 @@ import { CollectionConfig } from 'payload'
 
 export const Media: CollectionConfig = {
   slug: 'media',
-  admin: {
-    group: 'Media',
-    defaultColumns: ['filename', 'alt', 'updatedAt'],
-  },
   upload: {
     staticDir: 'public/media',
     imageSizes: [

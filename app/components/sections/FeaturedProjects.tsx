@@ -1,109 +1,122 @@
 import Link from 'next/link'
+import { getPayloadClient, asText } from '@/lib/payload'
 
-import { asText, getPayloadClient } from '@/lib/payload'
-
-function formatProjectLocation(location: unknown) {
-  if (!location || typeof location !== 'object') return ''
-  const record = location as Record<string, unknown>
-  const city = typeof record.city === 'string' ? record.city : ''
-  const country = typeof record.country === 'string' ? record.country : ''
-  return [city, country].filter(Boolean).join(', ')
+interface Project {
+  id: string
+  title: string | Record<string, string>
+  slug: string
+  status: 'upcoming' | 'ongoing' | 'completed'
+  location?: {
+    city?: string
+    country?: string
+  }
+  summary?: string | Record<string, string>
+  featured?: boolean
 }
 
-function formatProjectStatus(status: unknown) {
-  if (status === 'upcoming') return 'Upcoming'
-  if (status === 'ongoing') return 'Ongoing'
-  if (status === 'completed') return 'Completed'
-  return 'Project'
+const statusConfig = {
+  upcoming: { icon: '🚀', color: 'from-orange/20 to-coral/10', badge: 'bg-orange/20 text-orange' },
+  ongoing: { icon: '⚡', color: 'from-coral/20 to-blush/20', badge: 'bg-coral/20 text-coral' },
+  completed: { icon: '✨', color: 'from-blush/30 to-mist', badge: 'bg-blush/40 text-deep' },
 }
 
 export async function FeaturedProjects() {
   const payload = await getPayloadClient()
 
-  const featured = await payload.find({
+  const featuredResult = await payload.find({
     collection: 'projects',
+    where: {
+      featured: { equals: true },
+    },
     limit: 3,
     sort: '-createdAt',
-    where: {
-      featured: {
-        equals: true,
-      },
-    },
   })
+  const projects = featuredResult.docs as unknown as Project[]
 
-  const fallback = featured.docs.length
-    ? featured
-    : await payload.find({
-        collection: 'projects',
-        limit: 3,
-        sort: '-createdAt',
-      })
+  let displayProjects = projects
+  if (projects.length === 0) {
+    const latestResult = await payload.find({
+      collection: 'projects',
+      limit: 3,
+      sort: '-createdAt',
+    })
+    displayProjects = latestResult.docs as unknown as Project[]
+  }
 
-  const projects = fallback.docs.map((doc: unknown) => {
-    const record = doc as Record<string, unknown>
-    const idValue = record.id
-    const id = String(idValue)
+  const getLocation = (project: Project) => {
+    if (!project.location) return ''
+    const parts = [project.location.city, project.location.country].filter(Boolean)
+    return parts.join(', ')
+  }
 
-    const rawSlug = record.slug
-    const slug =
-      typeof rawSlug === 'string' && rawSlug.trim().length > 0 ? rawSlug.trim() : id
-
-    return {
-      id,
-      slug,
-      title: asText(record.title) || 'Untitled project',
-      status: formatProjectStatus(record.status),
-      location: formatProjectLocation(record.location),
-      summary: asText(record.summary),
-    }
-  })
+  if (displayProjects.length === 0) {
+    return null
+  }
 
   return (
-    <section className="py-16 md:py-24 px-4 bg-paper">
-      <div className="mx-auto max-w-[1280px] px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-serif font-bold uppercase tracking-[0.14em] text-ink mb-4">
+    <section className="py-20 md:py-28 bg-paper relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blush/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+      
+      <div className="mx-auto max-w-[1280px] px-6 relative">
+        <div className="text-center mb-16">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-coral mb-3">
+            Making an Impact
+          </p>
+          <h2 className="text-3xl md:text-5xl font-serif font-bold uppercase tracking-[0.1em] text-ink mb-4">
             Featured Projects
           </h2>
-          <p className="text-deep/80 text-lg">
-            Discover the impactful work we’re doing across Europe.
+          <p className="text-deep/70 text-lg max-w-2xl mx-auto">
+            Discover the impactful work we&apos;re doing across Europe.
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 mb-12">
-          {projects.map((project) => (
-            <Link
-              key={project.id}
-              href={`/projects/${project.slug}`}
-              className="group border-0"
-            >
-              <div className="bg-paper rounded-[10px] overflow-hidden border border-muted/30 hover:border-blush transition-colors h-full flex flex-col hover:-translate-y-[1px] hover:shadow-sm">
-                <div className="h-48 bg-mist" />
-                <div className="p-6 flex-1 flex flex-col">
-                  <div className="mb-3">
-                    <span className="text-xs font-medium text-muted uppercase tracking-[0.16em]">
-                      {project.status}
-                    </span>
+          {displayProjects.map((project) => {
+            const config = statusConfig[project.status] || statusConfig.upcoming
+            return (
+              <Link
+                key={project.id}
+                href={`/projects/${project.slug}`}
+                className="group"
+              >
+                <div className={`bg-gradient-to-br ${config.color} rounded-3xl overflow-hidden border border-muted/20 hover:border-coral/30 hover:shadow-xl hover:shadow-coral/5 transition-all duration-300 h-full flex flex-col hover:-translate-y-2`}>
+                  <div className="h-48 flex items-center justify-center text-6xl group-hover:scale-110 transition-transform duration-300">
+                    {config.icon}
                   </div>
-                  <h3 className="text-lg font-serif font-bold text-ink mb-2 group-hover:underline group-hover:decoration-muted/50 group-hover:underline-offset-4 transition-colors">
-                    {project.title}
-                  </h3>
-                  <p className="text-sm text-deep/80 mb-4 flex-1 leading-relaxed">
-                    {project.summary || '—'}
-                  </p>
-                  <p className="text-xs text-muted uppercase tracking-[0.12em]">{project.location}</p>
+                  <div className="p-6 flex-1 flex flex-col bg-paper/80 backdrop-blur-sm">
+                    <div className="mb-3">
+                      <span className={`inline-flex px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${config.badge}`}>
+                        {project.status}
+                      </span>
+                    </div>
+                    <h3 className="text-lg font-serif font-bold text-ink mb-2 group-hover:text-coral transition-colors">
+                      {asText(project.title)}
+                    </h3>
+                    {project.summary && (
+                      <p className="text-sm text-deep/70 mb-4 flex-1 leading-relaxed line-clamp-3">
+                        {asText(project.summary)}
+                      </p>
+                    )}
+                    {getLocation(project) && (
+                      <p className="text-xs text-muted uppercase tracking-[0.12em] flex items-center gap-1">
+                        <span>📍</span> {getLocation(project)}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            )
+          })}
         </div>
 
         <div className="text-center">
           <Link
             href="/projects"
-            className="inline-flex px-8 py-3 rounded-[10px] border border-ink text-ink bg-transparent uppercase text-sm font-medium tracking-[0.14em] hover:bg-ink hover:text-paper transition-colors"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-full border-2 border-ink text-ink bg-transparent uppercase text-sm font-bold tracking-[0.14em] hover:bg-ink hover:text-paper transition-all duration-300 group"
           >
-            View All Projects
+            <span>View All Projects</span>
+            <span className="group-hover:translate-x-1 transition-transform">→</span>
           </Link>
         </div>
       </div>

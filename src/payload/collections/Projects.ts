@@ -1,38 +1,12 @@
 import { CollectionConfig } from 'payload'
 
-import { slugify } from '@/lib/slugify'
-
 export const Projects: CollectionConfig = {
   slug: 'projects',
-  admin: {
-    useAsTitle: 'title',
-    group: 'Content',
-    defaultColumns: ['title', 'status', 'slug', 'updatedAt'],
-  },
   access: {
     read: () => true,
     create: ({ req }) => Boolean(req.user),
     update: ({ req }) => Boolean(req.user),
     delete: ({ req }) => Boolean(req.user),
-  },
-  hooks: {
-    beforeValidate: [
-      ({ data }) => {
-        if (!data) return data
-        const title = data.title
-
-        if (!data.slug && typeof title === 'string') {
-          data.slug = slugify(title)
-        }
-
-        if (!data.slug && title && typeof title === 'object') {
-          const first = Object.values(title as Record<string, unknown>)[0]
-          if (typeof first === 'string') data.slug = slugify(first)
-        }
-
-        return data
-      },
-    ],
   },
   fields: [
     {
@@ -48,7 +22,6 @@ export const Projects: CollectionConfig = {
       unique: true,
       admin: {
         position: 'sidebar',
-        description: 'Used in the public URL, e.g. /projects/my-project',
       },
     },
     {
@@ -154,9 +127,6 @@ export const Projects: CollectionConfig = {
       name: 'featured',
       type: 'checkbox',
       defaultValue: false,
-      admin: {
-        position: 'sidebar',
-      },
     },
   ],
 }

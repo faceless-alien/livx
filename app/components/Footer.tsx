@@ -26,12 +26,12 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Legal */}
+          {/* Connect */}
           <div>
-            <h4 className="text-xs font-bold tracking-[0.16em] uppercase mb-4 text-ink">Legal</h4>
+            <h4 className="text-xs font-bold tracking-[0.16em] uppercase mb-4 text-ink">Connect</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/privacy" className="border-0 text-ink/80 hover:text-deep hover:underline hover:underline-offset-4">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="border-0 text-ink/80 hover:text-deep hover:underline hover:underline-offset-4">Terms of Service</Link></li>
+              <li><Link href="/contact" className="border-0 text-ink/80 hover:text-deep hover:underline hover:underline-offset-4">Contact Us</Link></li>
+              <li><Link href="/for-partners" className="border-0 text-ink/80 hover:text-deep hover:underline hover:underline-offset-4">For Partners</Link></li>
             </ul>
           </div>
 
@@ -39,9 +39,7 @@ export default function Footer() {
           <div>
             <h4 className="text-xs font-bold tracking-[0.16em] uppercase mb-4 text-ink">Follow Us</h4>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="border-0 text-ink/80 hover:text-deep hover:underline hover:underline-offset-4">Instagram</a></li>
-              <li><a href="#" className="border-0 text-ink/80 hover:text-deep hover:underline hover:underline-offset-4">LinkedIn</a></li>
-              <li><a href="#" className="border-0 text-ink/80 hover:text-deep hover:underline hover:underline-offset-4">Twitter</a></li>
+              <li><a href="https://www.instagram.com/livx.project/" target="_blank" rel="noopener noreferrer" className="border-0 text-ink/80 hover:text-deep hover:underline hover:underline-offset-4">Instagram ↗</a></li>
             </ul>
           </div>
         </div>

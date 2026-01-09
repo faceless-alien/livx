@@ -1,0 +1,48 @@
+# DigitalOcean App Platform Specification
+# Deploy this app at: https://cloud.digitalocean.com/apps/new
+
+name: livx
+
+services:
+  - name: web
+    github:
+      repo: faceless-alien/livx
+      branch: main
+      deploy_on_push: true
+    build_command: npm install && npm run build
+    run_command: npm start
+    environment_slug: node-js
+    instance_count: 1
+    instance_size_slug: professional-xs
+    http_port: 3000
+    routes:
+      - path: /
+    health_check:
+      http_path: /
+      initial_delay_seconds: 30
+      period_seconds: 30
+      timeout_seconds: 10
+      success_threshold: 1
+      failure_threshold: 3
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URI
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: PAYLOAD_SECRET
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: NEXT_PUBLIC_SERVER_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${APP_URL}
+      - key: PAYLOAD_PUBLIC_SERVER_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ${APP_URL}
+
+databases:
+  - name: livx-db
+    engine: PG
+    version: "16"
+    size: db-s-dev-database
+    num_nodes: 1

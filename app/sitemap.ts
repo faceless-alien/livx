@@ -41,11 +41,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }),
     ])
 
+    const toDate = (value: unknown): Date | undefined => {
+      if (value instanceof Date) return value
+      if (typeof value === 'string' || typeof value === 'number') return new Date(value)
+      return undefined
+    }
+
     for (const doc of projects.docs) {
       if (doc?.slug) {
         items.push({
           url: `${baseUrl}/projects/${doc.slug}`,
-          lastModified: doc.updatedAt ? new Date(doc.updatedAt) : now,
+          lastModified: toDate(doc.updatedAt) ?? now,
           changeFrequency: 'monthly',
           priority: 0.6,
         })
@@ -56,7 +62,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       if (doc?.slug) {
         items.push({
           url: `${baseUrl}/open-calls/${doc.slug}`,
-          lastModified: doc.updatedAt ? new Date(doc.updatedAt) : now,
+          lastModified: toDate(doc.updatedAt) ?? now,
           changeFrequency: 'weekly',
           priority: 0.6,
         })
