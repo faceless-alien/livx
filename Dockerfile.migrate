@@ -1,0 +1,18 @@
+# Migration container - runs Payload db push then exits
+FROM node:20-alpine
+
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install all dependencies (including dev for tsx)
+RUN npm ci
+
+# Copy source files needed for migrations
+COPY . .
+
+# Generate Payload types and push schema
+# Using a custom script that initializes Payload which triggers schema push
+CMD ["node", "--import", "tsx", "scripts/db-push.ts"]
