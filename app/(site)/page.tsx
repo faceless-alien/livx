@@ -8,6 +8,8 @@ import { Testimonials } from '@/components/sections/Testimonials'
 import { FinalCTA } from '@/components/sections/FinalCTA'
 import { Suspense } from 'react'
 
+export const dynamic = 'force-dynamic'
+
 function LoadingSection() {
   return (
     <div className="py-16 flex justify-center">

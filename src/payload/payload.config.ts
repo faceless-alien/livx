@@ -63,10 +63,23 @@ export default buildConfig({
   ],
   globals: [HomeSettings],
   editor: lexicalEditor({}),
-  secret: process.env.PAYLOAD_SECRET || 'your-secret-key-change-in-production',
+  secret:
+    process.env.PAYLOAD_SECRET ||
+    (process.env.NODE_ENV === 'production'
+      ? (() => {
+          throw new Error('PAYLOAD_SECRET is required in production')
+        })()
+      : 'dev-secret-change-me'),
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URL || 'postgresql://postgres:password@localhost:5432/livx',
+      connectionString:
+        process.env.DATABASE_URL ||
+        process.env.DATABASE_URI ||
+        (process.env.NODE_ENV === 'production'
+          ? (() => {
+              throw new Error('DATABASE_URL (or DATABASE_URI) is required in production')
+            })()
+          : 'postgresql://postgres:password@localhost:5432/livx'),
     },
   }),
 })

@@ -2,7 +2,9 @@ import type { MetadataRoute } from 'next'
 
 import { getPayloadClient } from '@/lib/payload'
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://livx.org'
+export const dynamic = 'force-dynamic'
+
+const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? 'https://livx.org'
 
 const staticRoutes = [
   '/',

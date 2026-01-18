@@ -18,13 +18,14 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Set build-time environment variables
-ARG DATABASE_URI
+# Build-time environment variables
+# Note: these are only used during build. Runtime config comes from container env.
+ARG DATABASE_URL
 ARG PAYLOAD_SECRET
 ARG NEXT_PUBLIC_SERVER_URL
 ARG PAYLOAD_PUBLIC_SERVER_URL
 
-ENV DATABASE_URI=$DATABASE_URI
+ENV DATABASE_URL=$DATABASE_URL
 ENV PAYLOAD_SECRET=$PAYLOAD_SECRET
 ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
 ENV PAYLOAD_PUBLIC_SERVER_URL=$PAYLOAD_PUBLIC_SERVER_URL

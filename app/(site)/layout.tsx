@@ -9,6 +9,7 @@ import Footer from '@/components/Footer'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL ?? 'https://livx.org'),
   title: 'LIVX - Erasmus+ Youth Organization',
   description:
     'Live, Improve, Value, Exchange. LIVX empowers youth through Erasmus+ exchanges, volunteering, and non-formal education.',

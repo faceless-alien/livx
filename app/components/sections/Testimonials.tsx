@@ -69,7 +69,7 @@ export async function Testimonials() {
               key={story.id}
               className={`group bg-gradient-to-br ${colors[idx % colors.length]} rounded-3xl p-8 md:p-10 border border-muted/20 hover:shadow-xl hover:shadow-coral/5 transition-all duration-300 hover:-translate-y-1`}
             >
-              <div className="text-5xl mb-6 opacity-30">"</div>
+              <div className="text-5xl mb-6 opacity-30">&ldquo;</div>
               <blockquote className="text-xl md:text-2xl font-serif text-ink leading-relaxed -mt-8">
                 {asText(story.quote)}
               </blockquote>
