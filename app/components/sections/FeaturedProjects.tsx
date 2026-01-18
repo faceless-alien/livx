@@ -21,26 +21,32 @@ const statusConfig = {
 }
 
 export async function FeaturedProjects() {
-  const payload = await getPayloadClient()
-
-  const featuredResult = await payload.find({
-    collection: 'projects',
-    where: {
-      featured: { equals: true },
-    },
-    limit: 3,
-    sort: '-createdAt',
-  })
-  const projects = featuredResult.docs as unknown as Project[]
-
-  let displayProjects = projects
-  if (projects.length === 0) {
-    const latestResult = await payload.find({
+  let displayProjects: Project[] = []
+  
+  try {
+    const payload = await getPayloadClient()
+    const featuredResult = await payload.find({
       collection: 'projects',
+      where: {
+        featured: { equals: true },
+      },
       limit: 3,
       sort: '-createdAt',
     })
-    displayProjects = latestResult.docs as unknown as Project[]
+    const projects = featuredResult.docs as unknown as Project[]
+
+    displayProjects = projects
+    if (projects.length === 0) {
+      const latestResult = await payload.find({
+        collection: 'projects',
+        limit: 3,
+        sort: '-createdAt',
+      })
+      displayProjects = latestResult.docs as unknown as Project[]
+    }
+  } catch (error) {
+    console.error('Failed to fetch projects:', error)
+    return null // Database not ready yet
   }
 
   const getLocation = (project: Project) => {

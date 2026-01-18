@@ -22,17 +22,31 @@ interface OpenCall {
 }
 
 export default async function OpenCalls() {
-  const payload = await getPayloadClient()
+  let calls: OpenCall[] = []
 
-  const result = await payload.find({
-    collection: 'open-calls',
-    limit: 100,
-    sort: 'deadline',
-    where: {
-      status: { not_equals: 'draft' },
-    },
-  })
-  const calls = result.docs as unknown as OpenCall[]
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'open-calls',
+      limit: 100,
+      sort: 'deadline',
+      where: {
+        status: { not_equals: 'draft' },
+      },
+    })
+    calls = result.docs as unknown as OpenCall[]
+  } catch (error) {
+    console.error('Failed to fetch open calls:', error)
+    // Return setup message if database not ready
+    return (
+      <div className="bg-mist min-h-screen flex items-center justify-center">
+        <div className="text-center p-8">
+          <h1 className="text-2xl font-serif font-bold text-ink mb-4">Setting Up...</h1>
+          <p className="text-deep/70">Please visit <Link href="/admin" className="text-coral underline">/admin</Link> to initialize the database.</p>
+        </div>
+      </div>
+    )
+  }
 
   const formatDeadline = (deadline: string) => {
     return new Date(deadline).toLocaleDateString('en-US', {

@@ -21,14 +21,28 @@ interface Project {
 }
 
 export default async function Projects() {
-  const payload = await getPayloadClient()
-  
-  const result = await payload.find({
-    collection: 'projects',
-    limit: 100,
-    sort: '-createdAt',
-  })
-  const projects = result.docs as unknown as Project[]
+  let projects: Project[] = []
+
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'projects',
+      limit: 100,
+      sort: '-createdAt',
+    })
+    projects = result.docs as unknown as Project[]
+  } catch (error) {
+    console.error('Failed to fetch projects:', error)
+    // Return setup message if database not ready
+    return (
+      <div className="bg-mist min-h-screen flex items-center justify-center">
+        <div className="text-center p-8">
+          <h1 className="text-2xl font-serif font-bold text-ink mb-4">Setting Up...</h1>
+          <p className="text-deep/70">Please visit <Link href="/admin" className="text-coral underline">/admin</Link> to initialize the database.</p>
+        </div>
+      </div>
+    )
+  }
 
   const getYear = (project: Project) => {
     if (project.startDate) {

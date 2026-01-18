@@ -11,26 +11,32 @@ interface Story {
 }
 
 export async function Testimonials() {
-  const payload = await getPayloadClient()
-
-  const result = await payload.find({
-    collection: 'stories',
-    where: {
-      featured: { equals: true },
-    },
-    limit: 4,
-    sort: 'order',
-  })
-  let stories = result.docs as unknown as Story[]
-
-  // Fallback to latest if no featured
-  if (stories.length === 0) {
-    const fallbackResult = await payload.find({
+  let stories: Story[] = []
+  
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
       collection: 'stories',
+      where: {
+        featured: { equals: true },
+      },
       limit: 4,
-      sort: '-createdAt',
+      sort: 'order',
     })
-    stories = fallbackResult.docs as unknown as Story[]
+    stories = result.docs as unknown as Story[]
+
+    // Fallback to latest if no featured
+    if (stories.length === 0) {
+      const fallbackResult = await payload.find({
+        collection: 'stories',
+        limit: 4,
+        sort: '-createdAt',
+      })
+      stories = fallbackResult.docs as unknown as Story[]
+    }
+  } catch (error) {
+    console.error('Failed to fetch stories:', error)
+    return null // Database not ready yet
   }
 
   if (stories.length === 0) {

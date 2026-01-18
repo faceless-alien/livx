@@ -32,17 +32,23 @@ function getDaysUntil(dateString: string): number {
 }
 
 export async function OpenCallsPreview() {
-  const payload = await getPayloadClient()
-
-  const result = await payload.find({
-    collection: 'open-calls',
-    where: {
-      status: { equals: 'open' },
-    },
-    limit: 3,
-    sort: 'deadline',
-  })
-  const openCalls = result.docs as unknown as OpenCall[]
+  let openCalls: OpenCall[] = []
+  
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'open-calls',
+      where: {
+        status: { equals: 'open' },
+      },
+      limit: 3,
+      sort: 'deadline',
+    })
+    openCalls = result.docs as unknown as OpenCall[]
+  } catch (error) {
+    console.error('Failed to fetch open calls:', error)
+    return null // Database not ready yet
+  }
 
   const getLocation = (call: OpenCall) => {
     if (!call.location) return ''

@@ -33,37 +33,56 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params
-  const payload = await getPayloadClient()
+  
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'projects',
+      where: { slug: { equals: slug } },
+      limit: 1,
+    })
+    const docs = result.docs as unknown as Project[]
 
-  const result = await payload.find({
-    collection: 'projects',
-    where: { slug: { equals: slug } },
-    limit: 1,
-  })
-  const docs = result.docs as unknown as Project[]
+    const project = docs[0]
+    if (!project) return { title: 'Project Not Found' }
 
-  const project = docs[0]
-  if (!project) return { title: 'Project Not Found' }
-
-  return {
-    title: `${asText(project.title)} | LIVX Projects`,
-    description: project.summary ? asText(project.summary) : undefined,
+    return {
+      title: `${asText(project.title)} | LIVX Projects`,
+      description: project.summary ? asText(project.summary) : undefined,
+    }
+  } catch (error) {
+    console.error('Failed to generate metadata:', error)
+    return { title: 'Project | LIVX' }
   }
 }
 
 export default async function ProjectPage({ params }: PageProps) {
   const { slug } = await params
-  const payload = await getPayloadClient()
+  
+  let project: Project | null = null
+  
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'projects',
+      where: { slug: { equals: slug } },
+      limit: 1,
+      depth: 2,
+    })
+    const docs = result.docs as unknown as Project[]
+    project = docs[0] || null
+  } catch (error) {
+    console.error('Failed to fetch project:', error)
+    return (
+      <div className="bg-mist min-h-screen flex items-center justify-center">
+        <div className="text-center p-8">
+          <h1 className="text-2xl font-serif font-bold text-ink mb-4">Setting Up...</h1>
+          <p className="text-deep/70">Please visit <Link href="/admin" className="text-coral underline">/admin</Link> to initialize the database.</p>
+        </div>
+      </div>
+    )
+  }
 
-  const result = await payload.find({
-    collection: 'projects',
-    where: { slug: { equals: slug } },
-    limit: 1,
-    depth: 2,
-  })
-  const docs = result.docs as unknown as Project[]
-
-  const project = docs[0]
   if (!project) notFound()
 
   const getLocation = () => {

@@ -15,15 +15,21 @@ interface Partner {
 }
 
 export async function PartnerLogos() {
-  const payload = await getPayloadClient()
-
-  const result = await payload.find({
-    collection: 'partners',
-    limit: 12,
-    sort: 'order',
-    depth: 1,
-  })
-  const partners = result.docs as unknown as Partner[]
+  let partners: Partner[] = []
+  
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'partners',
+      limit: 12,
+      sort: 'order',
+      depth: 1,
+    })
+    partners = result.docs as unknown as Partner[]
+  } catch (error) {
+    console.error('Failed to fetch partners:', error)
+    return null // Database not ready yet
+  }
 
   if (partners.length === 0) {
     return null

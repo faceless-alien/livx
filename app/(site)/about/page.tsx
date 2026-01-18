@@ -27,14 +27,20 @@ const socialIcons: Record<string, string> = {
 }
 
 export default async function About() {
-  const payload = await getPayloadClient()
+  let teamMembers: TeamMember[] = []
 
-  const result = await payload.find({
-    collection: 'team-members',
-    limit: 20,
-    depth: 1,
-  })
-  const teamMembers = result.docs as unknown as TeamMember[]
+  try {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'team-members',
+      limit: 20,
+      depth: 1,
+    })
+    teamMembers = result.docs as unknown as TeamMember[]
+  } catch (error) {
+    console.error('Failed to fetch team members:', error)
+    // Continue with empty team - page still works without team section
+  }
 
   return (
     <div className="bg-mist">
