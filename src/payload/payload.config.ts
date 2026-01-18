@@ -71,6 +71,7 @@ export default buildConfig({
         })()
       : 'dev-secret-change-me'),
   db: postgresAdapter({
+    push: true, // Auto-push schema changes (creates tables on first run)
     pool: {
       connectionString:
         process.env.DATABASE_URL ||
